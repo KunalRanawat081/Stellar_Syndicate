@@ -3,7 +3,7 @@
 StellarSyndicate is a decentralized bulk-buy and co-op purchasing application designed to help small businesses and communities pool resources to access wholesale prices, leveraging the Stellar network for fast, low-cost settlements.
 
 ## Live Demo & Contracts
-* **Live Demo URL:** [https://stellarsyndicate.vercel.app](https://stellarsyndicate.vercel.app)
+* **Live Demo URL:** [https://stellarsyndicate-main.vercel.app](https://stellarsyndicate-main.vercel.app)
 * **Deployed Soroban Contract Address:** [CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY](https://stellar.expert/explorer/testnet/contract/CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY)
 * **Successful Contract Call Tx Hash:** [cebc1786fd5698036121badde80858dfe10b6c9ad8877ff1dd5559a0b527e91f](https://stellar.expert/explorer/testnet/tx/cebc1786fd5698036121badde80858dfe10b6c9ad8877ff1dd5559a0b527e91f)
 
