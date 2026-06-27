@@ -6,7 +6,7 @@ export const RPC_URL = 'https://soroban-testnet.stellar.org';
 export const rpcServer = new StellarSdk.rpc.Server(RPC_URL);
 
 // Dummy address for read-only queries
-const DUMMY_ADDRESS = 'GBLKAQC76LGYSE6B7C56S754SCKOKS4FF7AOC33BEEF7A6K546B4E546';
+const DUMMY_ADDRESS = 'GC26DFQL3O4ASQAQGTGCWDIYK5XXT6ZQANU4LRUVSBXS2KEK74EAPGPH';
 
 export async function getGroupFromContract(groupId: string): Promise<any> {
   try {
