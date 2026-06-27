@@ -82,32 +82,7 @@ VITE_CONTRACT_ADDRESS=CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY
 
 ---
 
-## Screenshots Placeholders
-
-### 1. Wallet Connected
-![Wallet Connected](https://placehold.co/800x450/1e293b/ffffff?text=Wallet+Connected+Dashboard+Showing+XLM+Balance)
-*Displays the StellarWalletsKit interface connected successfully, with the user's XLM balance shown in the top navigation bar.*
-
-### 2. Balance Fetching
-![Balance Fetching](https://placehold.co/800x450/1e293b/ffffff?text=XLM+Balance+Fetched+Successfully)
-*Shows the native balance displayed clearly, updating automatically as transactions clear.*
-
-### 3. Successful Transaction
-![Successful Transaction](https://placehold.co/800x450/1e293b/ffffff?text=Successful+Stellar+Transaction)
-*Visual confirmation modal showcasing the ledger execution status and transaction hash link.*
-
-### 4. Transaction Feedback
-![Transaction Feedback](https://placehold.co/800x450/1e293b/ffffff?text=Transaction+Feedback+Overlay)
-*Demonstrates state changes (Pending -> Success/Failed) and detail cards showing active on-chain status.*
-
----
-
 ## Future Improvements
 * **Milestone Escrow:** Lock member funds in the contract and release them incrementally to the Lead Buyer based on shipping milestones.
 * **Volume Pricing Tiers:** Automatically adjust unit pricing as total order volume passes discount thresholds.
 * **Reputation System:** Build historical scores for Lead Buyers based on successful settlements.
-
----
-
-## License
-MIT License
