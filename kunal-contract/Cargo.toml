@@ -1,0 +1,20 @@
+[package]
+name = "kunal-contract"
+version = "0.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = "22.0.11"
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "debuginfo"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
