@@ -174,7 +174,7 @@ export async function markPaidOnChain(
 export async function pollTxStatus(txHash: string): Promise<string> {
   let status = 'PENDING';
   let attempts = 0;
-  while (status === 'PENDING' && attempts < 30) {
+  while ((status === 'PENDING' || status === 'NOT_FOUND') && attempts < 30) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const response = await rpcServer.getTransaction(txHash);
     status = response.status;
