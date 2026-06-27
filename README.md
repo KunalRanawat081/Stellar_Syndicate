@@ -31,7 +31,7 @@ StellarSyndicate is a decentralized bulk-buy and co-op purchasing application de
 ## Folder Structure
 ```text
 stellarsyndicate/
-├── kunal-contract/      # Soroban Smart Contract (Rust)
+├── contract/            # Soroban Smart Contract (Rust)
 │   ├── src/
 │   │   └── lib.rs       # Contract implementation (LumenGuildContract)
 │   └── Cargo.toml
