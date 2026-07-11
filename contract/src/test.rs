@@ -2,6 +2,7 @@
 
 use super::*;
 use soroban_sdk::{Env, Address, String};
+use soroban_sdk::testutils::Address as _;
 
 #[test]
 fn test_create_group() {
