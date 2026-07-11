@@ -6,7 +6,7 @@ use soroban_sdk::{Env, Address, String};
 #[test]
 fn test_create_group() {
     let env = Env::default();
-    let contract_id = env.register_contract(None, LumenGuildContract);
+    let contract_id = env.register(LumenGuildContract, ());
     let client = LumenGuildContractClient::new(&env, &contract_id);
 
     let group_id = String::from_str(&env, "g1");
@@ -26,7 +26,7 @@ fn test_create_group() {
 #[test]
 fn test_add_member_and_mark_paid() {
     let env = Env::default();
-    let contract_id = env.register_contract(None, LumenGuildContract);
+    let contract_id = env.register(LumenGuildContract, ());
     let client = LumenGuildContractClient::new(&env, &contract_id);
 
     let group_id = String::from_str(&env, "g1");
@@ -52,7 +52,7 @@ fn test_add_member_and_mark_paid() {
 #[should_panic] // GroupAlreadyExists
 fn test_duplicate_group_fails() {
     let env = Env::default();
-    let contract_id = env.register_contract(None, LumenGuildContract);
+    let contract_id = env.register(LumenGuildContract, ());
     let client = LumenGuildContractClient::new(&env, &contract_id);
 
     let group_id = String::from_str(&env, "g1");
@@ -68,7 +68,7 @@ fn test_duplicate_group_fails() {
 #[should_panic] // GroupNotFound
 fn test_add_member_nonexistent_group_fails() {
     let env = Env::default();
-    let contract_id = env.register_contract(None, LumenGuildContract);
+    let contract_id = env.register(LumenGuildContract, ());
     let client = LumenGuildContractClient::new(&env, &contract_id);
 
     let group_id = String::from_str(&env, "invalid_group");
