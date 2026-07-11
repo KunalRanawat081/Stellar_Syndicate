@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, Env, Address, String, Vec};
+use soroban_sdk::{contract, contractimpl, contracttype, contracterror, panic_with_error, Env, Address, String, Vec, Symbol};
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -19,6 +19,17 @@ pub struct Member {
     pub has_paid: bool,
 }
 
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum Error {
+    GroupAlreadyExists = 1,
+    GroupNotFound = 2,
+    MemberAlreadyExists = 3,
+    MemberNotFound = 4,
+    AlreadyPaid = 5,
+}
+
 #[contract]
 pub struct LumenGuildContract;
 
@@ -26,45 +37,84 @@ pub struct LumenGuildContract;
 impl LumenGuildContract {
     // Initialize a new group
     pub fn create_group(env: Env, group_id: String, title: String, desc: String, lead: Address) {
+        if env.storage().instance().has(&group_id) {
+            panic_with_error!(&env, Error::GroupAlreadyExists);
+        }
         let group = Group {
             id: group_id.clone(),
             title,
             description: desc,
-            lead_buyer: lead,
+            lead_buyer: lead.clone(),
         };
         env.storage().instance().set(&group_id, &group);
+
+        // Publish event
+        env.events().publish(
+            (Symbol::new(&env, "create_group"), group_id),
+            lead
+        );
     }
 
     // Get group info
     pub fn get_group(env: Env, group_id: String) -> Group {
+        if !env.storage().instance().has(&group_id) {
+            panic_with_error!(&env, Error::GroupNotFound);
+        }
         env.storage().instance().get(&group_id).unwrap()
     }
 
     // Add a member to a group
     pub fn add_member(env: Env, group_id: String, member_id: String, address: Address, order_amount: u32) {
+        if !env.storage().instance().has(&group_id) {
+            panic_with_error!(&env, Error::GroupNotFound);
+        }
+        let member_key = (group_id.clone(), member_id.clone());
+        if env.storage().instance().has(&member_key) {
+            panic_with_error!(&env, Error::MemberAlreadyExists);
+        }
         let member = Member {
             id: member_id.clone(),
-            address,
+            address: address.clone(),
             order_amount,
             has_paid: false,
         };
         
-        let member_key = (group_id.clone(), member_id.clone());
         env.storage().instance().set(&member_key, &member);
         
         let mut members: Vec<String> = env.storage().instance().get(&(group_id.clone(), "members")).unwrap_or(Vec::new(&env));
-        members.push_back(member_id);
-        env.storage().instance().set(&(group_id, "members"), &members);
+        members.push_back(member_id.clone());
+        env.storage().instance().set(&(group_id.clone(), "members"), &members);
+
+        // Publish event
+        env.events().publish(
+            (Symbol::new(&env, "add_member"), group_id, member_id),
+            (address, order_amount)
+        );
     }
 
     // Mark a member as paid
     pub fn mark_paid(env: Env, group_id: String, member_id: String) {
-        let member_key = (group_id, member_id);
+        let member_key = (group_id.clone(), member_id.clone());
+        if !env.storage().instance().has(&member_key) {
+            panic_with_error!(&env, Error::MemberNotFound);
+        }
         let mut member: Member = env.storage().instance().get(&member_key).unwrap();
+        if member.has_paid {
+            panic_with_error!(&env, Error::AlreadyPaid);
+        }
         
         member.address.require_auth();
         member.has_paid = true;
         
         env.storage().instance().set(&member_key, &member);
+
+        // Publish event
+        env.events().publish(
+            (Symbol::new(&env, "mark_paid"), group_id, member_id),
+            true
+        );
     }
 }
+
+#[cfg(test)]
+mod test;

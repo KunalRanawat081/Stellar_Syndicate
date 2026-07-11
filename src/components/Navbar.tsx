@@ -31,14 +31,16 @@ const Navbar: React.FC = () => {
       <nav className="sticky top-0 z-50 bg-surface/85 backdrop-blur-md border-b border-surfaceHover">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="flex items-center space-x-2 text-primary font-bold text-xl tracking-wide">
-              <Package2 className="w-6 h-6" />
-              <span>StellarSyndicate</span>
+            <Link to="/" className="flex items-center space-x-2 text-primary font-bold text-lg sm:text-xl tracking-wide shrink-0">
+              <Package2 className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span>
+                <span className="hidden sm:inline">Stellar</span>Syndicate
+              </span>
             </Link>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {address && (
-                <Link to="/dashboard" className="text-textMuted hover:text-textMain transition-colors text-sm font-medium mr-2">
+                <Link to="/dashboard" className="text-textMuted hover:text-textMain transition-colors text-xs sm:text-sm font-medium mr-1 sm:mr-2">
                   Dashboard
                 </Link>
               )}
@@ -47,24 +49,25 @@ const Navbar: React.FC = () => {
                 <button
                   onClick={connect}
                   disabled={isConnecting}
-                  className="flex items-center space-x-2 bg-primary hover:bg-primaryHover text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                  className="flex items-center space-x-1.5 sm:space-x-2 bg-primary hover:bg-primaryHover text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                  <Wallet className="w-4 h-4" />
-                  <span>{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
+                  <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>{isConnecting ? 'Connecting...' : 'Connect'}</span>
                 </button>
               ) : (
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1.5 sm:space-x-3">
                   {/* XLM Balance Display */}
-                  <div className="bg-surface/50 border border-surfaceHover px-3 py-1.5 rounded-lg text-sm flex items-center space-x-1">
-                    <span className="text-textMuted text-xs font-semibold uppercase tracking-wider mr-1">XLM:</span>
+                  <div className="bg-surface/50 border border-surfaceHover px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm flex items-center space-x-0.5">
+                    <span className="text-textMuted text-[10px] sm:text-xs font-semibold uppercase tracking-wider mr-0.5 hidden sm:inline">XLM:</span>
                     <span className="text-textMain font-mono font-bold text-primary">
-                      {balance !== null ? balance : 'Loading...'}
+                      {balance !== null ? balance : '...'}
                     </span>
+                    <span className="text-[10px] font-bold text-primary sm:hidden">X</span>
                   </div>
 
                   {/* Connected Wallet Info */}
-                  <div className="flex items-center space-x-3 bg-surfaceHover px-4 py-1.5 rounded-lg border border-surfaceHover">
-                    <span className="text-sm font-medium text-textMain">
+                  <div className="flex items-center space-x-1.5 sm:space-x-3 bg-surfaceHover px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-lg border border-surfaceHover text-xs sm:text-sm">
+                    <span className="font-medium text-textMain font-mono">
                       {formatAddress(address)}
                     </span>
                     <button
@@ -72,7 +75,7 @@ const Navbar: React.FC = () => {
                       className="text-textMuted hover:text-red-400 transition-colors cursor-pointer"
                       title="Disconnect"
                     >
-                      <LogOut className="w-4 h-4" />
+                      <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </div>

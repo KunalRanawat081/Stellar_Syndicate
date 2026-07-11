@@ -28,6 +28,7 @@ const GroupDetails: React.FC = () => {
   // Blockchain States
   const [isVerifiedOnChain, setIsVerifiedOnChain] = useState(false);
   const [isRefreshingChain, setIsRefreshingChain] = useState(false);
+  const [eventsList, setEventsList] = useState<any[]>([]);
 
   // Transaction States
   const [txStatus, setTxStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
@@ -37,6 +38,60 @@ const GroupDetails: React.FC = () => {
   const [overlayTitle, setOverlayTitle] = useState('Processing Transaction');
 
   const settlements = useMemo(() => (group ? calculateSettlements(group) : []), [group]);
+
+  const parseContractEvent = (ev: any) => {
+    try {
+      const topics = ev.topic.map((t: any) => StellarSdk.scValToNative(t));
+      const value = StellarSdk.scValToNative(ev.value);
+      const eventType = topics[0];
+
+      if (eventType === 'create_group') {
+        const gId = topics[1];
+        return {
+          id: ev.id,
+          txHash: ev.txHash,
+          ledger: ev.ledger,
+          timestamp: ev.ledgerClosedAt || new Date().toISOString(),
+          message: `Syndicate group "${gId}" registered on-chain by lead buyer.`,
+          type: 'info'
+        };
+      } else if (eventType === 'add_member') {
+        const mId = topics[2];
+        const mAddr = value[0] || '';
+        const orderAmount = value[1] || 0;
+        return {
+          id: ev.id,
+          txHash: ev.txHash,
+          ledger: ev.ledger,
+          timestamp: ev.ledgerClosedAt || new Date().toISOString(),
+          message: `Member "${mId}" (${mAddr.substring(0, 6)}...) added with order of ${orderAmount} units.`,
+          type: 'success'
+        };
+      } else if (eventType === 'mark_paid') {
+        const mId = topics[2];
+        return {
+          id: ev.id,
+          txHash: ev.txHash,
+          ledger: ev.ledger,
+          timestamp: ev.ledgerClosedAt || new Date().toISOString(),
+          message: `Member "${mId}" payment marked as settled on-chain.`,
+          type: 'success'
+        };
+      }
+      
+      return {
+        id: ev.id,
+        txHash: ev.txHash,
+        ledger: ev.ledger,
+        timestamp: ev.ledgerClosedAt || new Date().toISOString(),
+        message: `On-chain event [${eventType}] emitted for group.`,
+        type: 'info'
+      };
+    } catch (err) {
+      console.error('Failed to parse event:', err);
+      return null;
+    }
+  };
 
   // Check if group is registered on-chain
   const checkOnChainStatus = async () => {
@@ -57,8 +112,22 @@ const GroupDetails: React.FC = () => {
     // Listen to real-time events for this contract
     const unsubscribe = listenToContractEvents((event) => {
       console.log('Contract Event Received:', event);
-      // Auto-refresh on-chain status when events are observed
       checkOnChainStatus();
+
+      const parsed = parseContractEvent(event);
+      if (parsed) {
+        try {
+          const topics = event.topic.map((t: any) => StellarSdk.scValToNative(t));
+          if (topics[1] === id) {
+            setEventsList((prev) => {
+              if (prev.some((e) => e.id === parsed.id)) return prev;
+              return [parsed, ...prev];
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
     });
 
     // Auto-polling backup every 10 seconds to keep UI state fresh
@@ -481,6 +550,46 @@ const GroupDetails: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* On-Chain Events Feed */}
+      <div className="space-y-6 pt-8 border-t border-surfaceHover">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2 text-xl font-bold text-textMain">
+            <ShieldCheck className="text-primary w-5 h-5" />
+            <h2>On-Chain Activity Feed</h2>
+          </div>
+          <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-semibold flex items-center space-x-1.5 animate-pulse">
+            <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+            <span>Live Streaming</span>
+          </span>
+        </div>
+
+        <div className="bg-surface rounded-xl border border-surfaceHover overflow-hidden shadow-sm max-h-[300px] overflow-y-auto">
+          {eventsList.length === 0 ? (
+            <div className="p-6 text-center text-textMuted text-sm">Listening for real-time contract events...</div>
+          ) : (
+            <ul className="divide-y divide-surfaceHover">
+              {eventsList.map((e) => (
+                <li key={e.id} className="p-4 hover:bg-surfaceHover/10 transition-colors text-sm flex flex-col space-y-2">
+                  <div className="flex justify-between items-start flex-wrap gap-2 text-xs">
+                    <span className="text-textMuted font-medium">Ledger: #{e.ledger}</span>
+                    <span className="text-textMuted font-mono select-all">Tx: {e.txHash.substring(0, 12)}...{e.txHash.substring(e.txHash.length - 4)}</span>
+                  </div>
+                  <p className="text-textMain font-medium">{e.message}</p>
+                  <a
+                    href={`https://stellar.expert/explorer/testnet/tx/${e.txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline inline-flex items-center space-x-1"
+                  >
+                    <span>Verify on Stellar Expert</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
 
       <LoadingOverlay
         isOpen={isOverlayOpen}

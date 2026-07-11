@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
 import { motion } from 'framer-motion';
-import { Users, Truck, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Users, Truck, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
-  const { address, connect } = useWallet();
+  const { address, isConnecting, connect } = useWallet();
 
   const features = [
     {
@@ -52,10 +52,20 @@ const LandingPage: React.FC = () => {
           ) : (
             <button
               onClick={connect}
-              className="inline-flex items-center space-x-2 bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-xl text-lg font-bold transition-all transform hover:scale-105"
+              disabled={isConnecting}
+              className="inline-flex items-center space-x-2 bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-xl text-lg font-bold transition-all transform hover:scale-105 disabled:opacity-50"
             >
-              <span>Connect Wallet to Start</span>
-              <ArrowRight className="w-5 h-5" />
+              {isConnecting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Connecting...</span>
+                </>
+              ) : (
+                <>
+                  <span>Connect Wallet to Start</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           )}
         </div>
