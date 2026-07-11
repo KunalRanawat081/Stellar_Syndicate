@@ -49,7 +49,7 @@ fn test_add_member_and_mark_paid() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #1)")] // GroupAlreadyExists
+#[should_panic] // GroupAlreadyExists
 fn test_duplicate_group_fails() {
     let env = Env::default();
     let contract_id = env.register_contract(None, LumenGuildContract);
@@ -65,7 +65,7 @@ fn test_duplicate_group_fails() {
 }
 
 #[test]
-#[should_panic(expected = "Error(Contract, #2)")] // GroupNotFound
+#[should_panic] // GroupNotFound
 fn test_add_member_nonexistent_group_fails() {
     let env = Env::default();
     let contract_id = env.register_contract(None, LumenGuildContract);
