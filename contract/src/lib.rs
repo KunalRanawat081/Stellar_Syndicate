@@ -93,7 +93,8 @@ impl LumenGuildContract {
     }
 
     // Mark a member as paid
-    pub fn mark_paid(env: Env, group_id: String, member_id: String) {
+    pub fn mark_paid(env: Env, token: Address, group_id: String, member_id: String) {
+        let group = Self::get_group(env.clone(), group_id.clone());
         let member_key = (group_id.clone(), member_id.clone());
         if !env.storage().instance().has(&member_key) {
             panic_with_error!(&env, Error::MemberNotFound);
@@ -104,6 +105,12 @@ impl LumenGuildContract {
         }
         
         member.address.require_auth();
+        
+        // Execute token transfer from member.address to group.lead_buyer
+        let amount = member.order_amount as i128;
+        let token_client = soroban_sdk::token::Client::new(&env, &token);
+        token_client.transfer(&member.address, &group.lead_buyer, &amount);
+        
         member.has_paid = true;
         
         env.storage().instance().set(&member_key, &member);

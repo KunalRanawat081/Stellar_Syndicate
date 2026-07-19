@@ -44,9 +44,25 @@ fn test_add_member_and_mark_paid() {
     // Test adding member
     client.add_member(&group_id, &member_id, &member_addr, &order_amount);
 
-    // Test mark paid
+    // Register a mock Stellar Asset Contract (SAC)
+    let token_admin = Address::generate(&env);
+    let token_contract_id = env.register_stellar_asset_contract_v2(token_admin);
+    let token_address = token_contract_id.address();
+    let token_client = soroban_sdk::token::Client::new(&env, &token_address);
+    let token_admin_client = soroban_sdk::token::StellarAssetClient::new(&env, &token_address);
+
+    // Mock all authorizations for minting and payment
     env.mock_all_auths();
-    client.mark_paid(&group_id, &member_id);
+
+    // Mint tokens to the member address
+    token_admin_client.mint(&member_addr, &(order_amount as i128));
+
+    // Test mark paid
+    client.mark_paid(&token_address, &group_id, &member_id);
+
+    // Verify token transfer balance changes
+    assert_eq!(token_client.balance(&member_addr), 0);
+    assert_eq!(token_client.balance(&lead), order_amount as i128);
 }
 
 #[test]

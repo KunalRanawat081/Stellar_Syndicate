@@ -1,0 +1,32 @@
+warning: use of deprecated method `soroban_sdk::events::Events::publish`: use the #[contractevent] macro on a contract event type
+  --> src/lib.rs:52:22
+   |
+52 |         env.events().publish(
+   |                      ^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `soroban_sdk::events::Events::publish`: use the #[contractevent] macro on a contract event type
+  --> src/lib.rs:89:22
+   |
+89 |         env.events().publish(
+   |                      ^^^^^^^
+
+warning: use of deprecated method `soroban_sdk::events::Events::publish`: use the #[contractevent] macro on a contract event type
+   --> src/lib.rs:119:22
+    |
+119 |         env.events().publish(
+    |                      ^^^^^^^
+
+warning: `contract` (lib test) generated 3 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/contract-8c8a7cfac534eadf)
+
+running 4 tests
+test test::test_add_member_nonexistent_group_fails - should panic ... ok
+test test::test_create_group ... ok
+test test::test_duplicate_group_fails - should panic ... ok
+test test::test_add_member_and_mark_paid ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

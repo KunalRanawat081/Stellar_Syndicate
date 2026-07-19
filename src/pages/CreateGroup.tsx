@@ -5,6 +5,8 @@ import { useGroups } from '../hooks/useGroups';
 import { motion } from 'framer-motion';
 import { createGroupOnChain } from '../utils/soroban';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { PlusCircle, FileText, Target, Users2, ChevronLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CreateGroup: React.FC = () => {
   const { address } = useWallet();
@@ -68,61 +70,92 @@ const CreateGroup: React.FC = () => {
   };
 
   if (!address) {
-    return <div className="text-center py-20 text-textMuted">Please connect your wallet first.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <Users2 className="w-16 h-16 text-textMuted mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Wallet Disconnected</h2>
+        <p className="text-textMuted max-w-md">Please connect your wallet first to create a purchase syndicate.</p>
+      </div>
+    );
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
       className="max-w-2xl mx-auto space-y-8"
     >
-      <div>
-        <h1 className="text-3xl font-bold">Create a Syndicate</h1>
-        <p className="text-textMuted mt-2">Start a new bulk purchasing group registered on the Stellar blockchain.</p>
+      <div className="flex items-center justify-between">
+        <Link
+          to="/dashboard"
+          className="inline-flex items-center space-x-2 text-textMuted hover:text-textMain transition-colors text-sm"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Back to Dashboard</span>
+        </Link>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-surface p-8 rounded-2xl border border-surfaceHover space-y-6">
-        <div>
-          <label className="block text-sm font-medium mb-2 text-textMain">Group Title</label>
+      <div className="space-y-2">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gradient">Create a Syndicate</h1>
+        <p className="text-textMuted">Start a new bulk purchasing group registered directly on the Stellar blockchain.</p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="glass-panel border-surfaceBorder/40 p-8 rounded-3xl space-y-6 shadow-xl relative overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="space-y-2">
+          <label className="flex items-center space-x-2 text-sm font-semibold text-textMain">
+            <PlusCircle className="w-4 h-4 text-primary" />
+            <span>Group Title</span>
+          </label>
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-background border border-surfaceHover rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-textMain"
-            placeholder="e.g. Summer 2026 Coffee Bean Import"
+            className="w-full bg-background border border-surfaceBorder/50 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all text-textMain text-sm placeholder:text-textMuted/60"
+            placeholder="e.g. Summer Coffee Bean Import"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2 text-textMain">Description</label>
+        <div className="space-y-2">
+          <label className="flex items-center space-x-2 text-sm font-semibold text-textMain">
+            <FileText className="w-4 h-4 text-primary" />
+            <span>Description</span>
+          </label>
           <textarea
             required
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-background border border-surfaceHover rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors min-h-[120px] text-textMain"
-            placeholder="What are we buying? Where is it coming from?"
+            className="w-full bg-background border border-surfaceBorder/50 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all min-h-[140px] text-textMain text-sm placeholder:text-textMuted/60 leading-relaxed"
+            placeholder="What products are we bulk-buying? What are the pricing tiers or shipping logistics details?"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2 text-textMain">Total Units Target (Optional)</label>
+        <div className="space-y-2">
+          <label className="flex items-center space-x-2 text-sm font-semibold text-textMain">
+            <Target className="w-4 h-4 text-primary" />
+            <span>Total Units Target (Optional)</span>
+          </label>
           <input
             type="number"
             min="0"
             value={target}
             onChange={(e) => setTarget(parseInt(e.target.value) || 0)}
-            className="w-full bg-background border border-surfaceHover rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors text-textMain"
+            className="w-full bg-background border border-surfaceBorder/50 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all text-textMain text-sm placeholder:text-textMuted/60"
             placeholder="0"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-primary hover:bg-primaryHover text-white font-bold py-3 rounded-lg transition-colors cursor-pointer shadow-lg hover:shadow-primary/20"
+          className="w-full bg-primary hover:bg-primaryHover text-white font-bold py-4 rounded-2xl transition-all cursor-pointer shadow-lg hover:shadow-primary/20 hover:scale-[1.01] active:scale-[0.99]"
         >
-          Create Group
+          Initialize On-Chain Group
         </button>
       </form>
 

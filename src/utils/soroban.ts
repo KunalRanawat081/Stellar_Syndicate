@@ -136,6 +136,7 @@ export async function addMemberOnChain(
 export async function markPaidOnChain(
   groupId: string,
   memberId: string,
+  tokenAddress: string,
   userAddress: string
 ): Promise<string> {
   const contract = new StellarSdk.Contract(CONTRACT_ID);
@@ -148,6 +149,7 @@ export async function markPaidOnChain(
     .addOperation(
       contract.call(
         'mark_paid',
+        StellarSdk.nativeToScVal(new StellarSdk.Address(tokenAddress)),
         StellarSdk.nativeToScVal(groupId),
         StellarSdk.nativeToScVal(memberId)
       )

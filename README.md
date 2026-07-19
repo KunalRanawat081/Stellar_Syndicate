@@ -54,7 +54,7 @@ stellarsyndicate/
 
 1. **Clone and Install Dependencies:**
    ```bash
-   git clone <your-repository-url>
+   git clone https://github.com/placeholder-username/stellar-syndicate.git
    cd stellarsyndicate
    npm install
    ```
@@ -72,6 +72,23 @@ stellarsyndicate/
 
 ---
 
+## Deployment
+
+To compile the smart contract and deploy it on the Stellar Testnet, run the `deploy.sh` script in the root directory:
+
+```bash
+./deploy.sh <source_account_or_identity> [network]
+```
+
+Example:
+```bash
+./deploy.sh my_identity testnet
+```
+
+The script will automatically compile the Rust smart contract into WASM bytecode using target `wasm32v1-none` and deploy it using the Stellar CLI.
+
+---
+
 ## Environment Variables
 Create a `.env` file in the root directory:
 ```env
@@ -86,3 +103,18 @@ VITE_CONTRACT_ADDRESS=CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY
 * **Milestone Escrow:** Lock member funds in the contract and release them incrementally to the Lead Buyer based on shipping milestones.
 * **Volume Pricing Tiers:** Automatically adjust unit pricing as total order volume passes discount thresholds.
 * **Reputation System:** Build historical scores for Lead Buyers based on successful settlements.
+
+---
+
+## Submission Assets
+
+Below are the visual assets demonstrating project compliance for Level 3 - Orange Belt requirements:
+
+### Mobile Responsive UI
+![Mobile Responsive UI](./assets/mobile-ui.png)
+
+### CI/CD Pipeline
+![CI/CD Pipeline](./assets/cicd-pipeline.png)
+
+### Smart Contract Test Output
+![Smart Contract Test Output](./assets/test-results.png)
