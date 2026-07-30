@@ -111,7 +111,7 @@ VITE_CONTRACT_ADDRESS=CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY
 Below are the visual assets demonstrating project compliance for Level 3 - Orange Belt requirements:
 
 ### Mobile Responsive UI
-![Mobile Responsive UI](./assets/mobile-ui.png)
+![Mobile Responsive UI](./assets/mobile-ui.jpeg)
 
 ### CI/CD Pipeline
 ![CI/CD Pipeline](./assets/cicd-pipeline.png)
