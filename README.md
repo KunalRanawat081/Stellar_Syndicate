@@ -113,6 +113,9 @@ Below are the visual assets demonstrating project compliance for Level 3 - Orang
 ### Mobile Responsive UI
 ![Mobile Responsive UI](./assets/mobile-ui.jpeg)
 
+### Desktop UI
+![Desktop UI](./assets/desktop-ui.png)
+
 ### CI/CD Pipeline
 ![CI/CD Pipeline](./assets/cicd-pipeline.png)
 
