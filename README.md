@@ -109,16 +109,19 @@ VITE_CONTRACT_ADDRESS=CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY
 
 ## Submission Assets
 
-Below are the visual assets demonstrating project compliance for Level 3 - Orange Belt requirements:
+Below are the visual assets demonstrating project compliance for Level 4 - Green Belt requirements:
 
 ### Mobile Responsive UI
-![Mobile Responsive UI](./assets/mobile-ui.jpeg)
+![Mobile Responsive UI](./assets/mobile-ui-v2.jpeg)
 
 ### Desktop UI
-![Desktop UI](./assets/desktop-ui.png)
+![Desktop UI](./assets/desktop-ui-v2.png)
 
 ### CI/CD Pipeline
 ![CI/CD Pipeline](./assets/cicd-pipeline.png)
 
 ### Smart Contract Test Output
 ![Smart Contract Test Output](./assets/test-results.png)
+
+### Vercel Analytics Dashboard
+![Vercel Analytics](./assets/vercel-analytics.png)
