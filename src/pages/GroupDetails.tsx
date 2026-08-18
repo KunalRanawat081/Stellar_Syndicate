@@ -5,7 +5,6 @@ import { useWallet } from '../context/WalletContext';
 import { calculateSettlements } from '../utils/settlement';
 import { addMemberOnChain, markPaidOnChain, getGroupFromContract, listenToContractEvents } from '../utils/soroban';
 import * as StellarSdk from '@stellar/stellar-sdk';
-import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 import { motion } from 'framer-motion';
 import { Calculator, DollarSign, Users, CheckCircle2, ShieldCheck, RefreshCw, Plus, CreditCard, Copy, ChevronLeft } from 'lucide-react';
 import LoadingOverlay from '../components/LoadingOverlay';
@@ -224,74 +223,61 @@ const GroupDetails: React.FC = () => {
     setExpenseAmt(0);
   };
 
-  const handlePay = async (memberId: string, amount: number) => {
+  const handlePay = async (memberId: string) => {
     if (!address) {
       alert('Please connect your wallet first.');
       return;
     }
 
-    setOverlayTitle('Processing Co-op Payment');
+    // Derive the financially correct settlement amount for this specific member
+    // from the same settlement engine used to render the UI cards.
+    // This is the only source of truth for "how much does this member owe".
+    const settlementEntry = settlements.find((s) => s.memberId === memberId);
+    if (!settlementEntry) {
+      alert('Could not calculate settlement amount. Please refresh and try again.');
+      return;
+    }
+    const amountXlm = settlementEntry.totalOwed;
+    if (amountXlm <= 0) {
+      alert('Settlement amount is zero. Please ensure expenses are logged before paying.');
+      return;
+    }
+
+    setOverlayTitle('Processing Co-op Settlement');
     setIsOverlayOpen(true);
     setTxStatus('pending');
     setTxHash(null);
     setTxError(null);
 
     try {
-      const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
-
-      // 1. Validate balance before starting payment
-      let sourceAccount;
-      try {
-        sourceAccount = await server.loadAccount(address);
-      } catch (e: any) {
-        if (e.response && e.response.status === 404) {
-          throw new Error('Your account is unfunded on Testnet. Please fund it first.');
-        }
-        throw e;
-      }
-
-      const nativeBal = sourceAccount.balances.find((b) => b.asset_type === 'native');
-      const balanceNum = nativeBal ? parseFloat(nativeBal.balance) : 0;
-      if (balanceNum < amount + 0.01) {
-        throw new Error(`Insufficient XLM balance. You need at least ${amount.toFixed(2)} XLM.`);
-      }
-
-      // 2. Build payment transaction
-      const networkPassphrase = StellarSdk.Networks.TESTNET;
-      const tx = new StellarSdk.TransactionBuilder(sourceAccount, {
-        fee: StellarSdk.BASE_FEE,
-        networkPassphrase,
-      })
-        .addOperation(
-          StellarSdk.Operation.payment({
-            destination: group.leadBuyer,
-            asset: StellarSdk.Asset.native(),
-            amount: amount.toFixed(7),
-          })
-        )
-        .setTimeout(30)
-        .build();
-
-      // 3. Sign XLM Payment using StellarWalletsKit
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(tx.toXDR(), {
-        networkPassphrase,
-        address,
-      });
-
-      const transactionToSubmit = StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, networkPassphrase);
-      await server.submitTransaction(transactionToSubmit);
-
-      // 4. Update the Smart Contract state using markPaidOnChain
-      const tokenAddress = 'CDLZFC3SYJYDZT7K67VZ75HPJGW5ZTYF2MYTCH2W3ZPN77O3JJV26UCA';
-      const contractHash = await markPaidOnChain(group.id, memberId, tokenAddress, address);
+      // Single atomic step: the Soroban contract owns the entire payment flow.
+      //
+      // FIX: The old approach submitted a raw Horizon payment operation *and*
+      // then called mark_paid with the wrong `order_amount` (item units, not
+      // money) — resulting in a double-charge and an incorrect token transfer.
+      //
+      // The fixed approach calls mark_paid once with the correct `amountXlm`
+      // derived from settlement.ts. The contract converts this to stroops
+      // internally and calls token::Client::transfer atomically. A single
+      // wallet signing prompt covers both the payment and the state update.
+      const contractHash = await markPaidOnChain(
+        group.id,
+        memberId,
+        amountXlm,
+        address
+        // tokenAddress defaults to the well-known XLM SAC in soroban.ts
+      );
 
       setTxHash(contractHash);
       setTxStatus('success');
 
-      // 5. Update local storage
+      // Optimistically update local state so the UI reflects the payment
+      // immediately, without waiting for the next Soroban hydration cycle.
       const updated = {
         ...group,
-        members: group.members.map((m) => (m.id === memberId ? { ...m, hasPaid: true } : m)),
+        members: group.members.map((m) =>
+          m.id === memberId ? { ...m, hasPaid: true } : m
+        ),
       };
       updateGroup(updated);
     } catch (err: any) {
@@ -299,7 +285,7 @@ const GroupDetails: React.FC = () => {
       setTxStatus('failed');
       const msg = err.message || String(err);
       if (msg.includes('rejected') || msg.includes('cancel')) {
-        setTxError('Payment request was rejected by user.');
+        setTxError('Payment was rejected by the user.');
       } else {
         setTxError(msg);
       }
@@ -620,7 +606,7 @@ const GroupDetails: React.FC = () => {
 
                   {!s.hasPaid && address === s.address && (
                     <button
-                      onClick={() => handlePay(s.memberId, s.totalOwed)}
+                      onClick={() => handlePay(s.memberId)}
                       className="w-full bg-primary hover:bg-primaryHover text-white py-3 rounded-2xl font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-lg hover:shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] outline-none"
                     >
                       <CreditCard className="w-4 h-4" />

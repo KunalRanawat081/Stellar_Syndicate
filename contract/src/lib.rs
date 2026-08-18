@@ -28,6 +28,7 @@ pub enum Error {
     MemberAlreadyExists = 3,
     MemberNotFound = 4,
     AlreadyPaid = 5,
+    InvalidAmount = 6,
 }
 
 #[contract]
@@ -92,8 +93,43 @@ impl LumenGuildContract {
         );
     }
 
-    // Mark a member as paid
-    pub fn mark_paid(env: Env, token: Address, group_id: String, member_id: String) {
+    // Get all member IDs registered in a group
+    pub fn get_members(env: Env, group_id: String) -> Vec<String> {
+        if !env.storage().instance().has(&group_id) {
+            panic_with_error!(&env, Error::GroupNotFound);
+        }
+        env.storage().instance()
+            .get(&(group_id, "members"))
+            .unwrap_or(Vec::new(&env))
+    }
+
+    // Get a single member's state (for hydrating hasPaid status)
+    pub fn get_member(env: Env, group_id: String, member_id: String) -> Member {
+        let member_key = (group_id, member_id);
+        if !env.storage().instance().has(&member_key) {
+            panic_with_error!(&env, Error::MemberNotFound);
+        }
+        env.storage().instance().get(&member_key).unwrap()
+    }
+
+    // Mark a member as paid.
+    //
+    // FIX: The `amount` parameter now carries the exact financial cost in the
+    // SAC token's base units (stroops for XLM), calculated by the frontend's
+    // settlement engine. This replaces the previous broken behaviour of using
+    // `member.order_amount` (item quantity, not a monetary value) as the
+    // transfer amount, and removes the redundant off-chain Horizon payment step.
+    //
+    // The contract now owns the entire payment flow atomically:
+    //   1. Verifies the group and member exist.
+    //   2. Requires auth from member.address.
+    //   3. Calls token.transfer to move `amount` stroops from member to lead_buyer.
+    //   4. Persists has_paid = true on-chain.
+    pub fn mark_paid(env: Env, token: Address, group_id: String, member_id: String, amount: i128) {
+        if amount <= 0 {
+            panic_with_error!(&env, Error::InvalidAmount);
+        }
+
         let group = Self::get_group(env.clone(), group_id.clone());
         let member_key = (group_id.clone(), member_id.clone());
         if !env.storage().instance().has(&member_key) {
@@ -104,21 +140,21 @@ impl LumenGuildContract {
             panic_with_error!(&env, Error::AlreadyPaid);
         }
         
+        // Require the member to authorise this call — they must sign the transaction
         member.address.require_auth();
-        
-        // Execute token transfer from member.address to group.lead_buyer
-        let amount = member.order_amount as i128;
+
+        // Execute the token transfer from the member's address to the lead buyer
+        // using the financially correct `amount` passed in from the settlement engine.
         let token_client = soroban_sdk::token::Client::new(&env, &token);
         token_client.transfer(&member.address, &group.lead_buyer, &amount);
         
         member.has_paid = true;
-        
         env.storage().instance().set(&member_key, &member);
 
         // Publish event
         env.events().publish(
             (Symbol::new(&env, "mark_paid"), group_id, member_id),
-            true
+            amount
         );
     }
 }

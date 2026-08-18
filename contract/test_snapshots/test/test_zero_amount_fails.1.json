@@ -8,8 +8,6 @@
     [],
     [],
     [],
-    [],
-    [],
     [
       [
         "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL7NV",
@@ -29,79 +27,6 @@
         }
       ]
     ],
-    [
-      [
-        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
-        {
-          "function": {
-            "contract_fn": {
-              "contract_address": "CDLDVFKHEZ2RVB3NG4UQA4VPD3TSHV6XMHXMHP2BSGCJ2IIWVTOHGDSG",
-              "function_name": "mint",
-              "args": [
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                },
-                {
-                  "i128": "75000000"
-                }
-              ]
-            }
-          },
-          "sub_invocations": []
-        }
-      ]
-    ],
-    [
-      [
-        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
-        {
-          "function": {
-            "contract_fn": {
-              "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
-              "function_name": "mark_paid",
-              "args": [
-                {
-                  "address": "CDLDVFKHEZ2RVB3NG4UQA4VPD3TSHV6XMHXMHP2BSGCJ2IIWVTOHGDSG"
-                },
-                {
-                  "string": "g1"
-                },
-                {
-                  "string": "m1"
-                },
-                {
-                  "i128": "75000000"
-                }
-              ]
-            }
-          },
-          "sub_invocations": [
-            {
-              "function": {
-                "contract_fn": {
-                  "contract_address": "CDLDVFKHEZ2RVB3NG4UQA4VPD3TSHV6XMHXMHP2BSGCJ2IIWVTOHGDSG",
-                  "function_name": "transfer",
-                  "args": [
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                    },
-                    {
-                      "i128": "75000000"
-                    }
-                  ]
-                }
-              },
-              "sub_invocations": []
-            }
-          ]
-        }
-      ]
-    ],
-    [],
-    [],
     []
   ],
   "ledger": {
@@ -181,7 +106,7 @@
                               "symbol": "description"
                             },
                             "val": {
-                              "string": "Bulk wholesale coffee import from Colombia"
+                              "string": "Test"
                             }
                           },
                           {
@@ -205,7 +130,7 @@
                               "symbol": "title"
                             },
                             "val": {
-                              "string": "Summer Coffee Import"
+                              "string": "Test Group"
                             }
                           }
                         ]
@@ -237,7 +162,7 @@
                               "symbol": "has_paid"
                             },
                             "val": {
-                              "bool": true
+                              "bool": false
                             }
                           },
                           {
@@ -253,7 +178,7 @@
                               "symbol": "order_amount"
                             },
                             "val": {
-                              "u32": 50
+                              "u32": 10
                             }
                           }
                         ]
@@ -286,150 +211,6 @@
           "ext": "v0"
         },
         "live_until": 4095
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M",
-              "key": {
-                "ledger_key_nonce": {
-                  "nonce": "1033654523790656264"
-                }
-              },
-              "durability": "temporary",
-              "val": "void"
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 6311999
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4",
-              "key": {
-                "ledger_key_nonce": {
-                  "nonce": "5541220902715666415"
-                }
-              },
-              "durability": "temporary",
-              "val": "void"
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 6311999
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CDLDVFKHEZ2RVB3NG4UQA4VPD3TSHV6XMHXMHP2BSGCJ2IIWVTOHGDSG",
-              "key": {
-                "vec": [
-                  {
-                    "symbol": "Balance"
-                  },
-                  {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                  }
-                ]
-              },
-              "durability": "persistent",
-              "val": {
-                "map": [
-                  {
-                    "key": {
-                      "symbol": "amount"
-                    },
-                    "val": {
-                      "i128": "75000000"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "authorized"
-                    },
-                    "val": {
-                      "bool": true
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "clawback"
-                    },
-                    "val": {
-                      "bool": false
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 518400
-      },
-      {
-        "entry": {
-          "last_modified_ledger_seq": 0,
-          "data": {
-            "contract_data": {
-              "ext": "v0",
-              "contract": "CDLDVFKHEZ2RVB3NG4UQA4VPD3TSHV6XMHXMHP2BSGCJ2IIWVTOHGDSG",
-              "key": {
-                "vec": [
-                  {
-                    "symbol": "Balance"
-                  },
-                  {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                  }
-                ]
-              },
-              "durability": "persistent",
-              "val": {
-                "map": [
-                  {
-                    "key": {
-                      "symbol": "amount"
-                    },
-                    "val": {
-                      "i128": "0"
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "authorized"
-                    },
-                    "val": {
-                      "bool": true
-                    }
-                  },
-                  {
-                    "key": {
-                      "symbol": "clawback"
-                    },
-                    "val": {
-                      "bool": false
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "ext": "v0"
-        },
-        "live_until": 518400
       },
       {
         "entry": {
