@@ -5,7 +5,7 @@ import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 // the app still works without a .env file during local development.
 export const CONTRACT_ID =
   import.meta.env.VITE_CONTRACT_ADDRESS ||
-  'CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY';
+  'CDSPKUMNGZHZYTOO5ZRX2TFJQIP776DYM53ZCE4RHKJCQBPOWYEMW4MG';
 
 export const RPC_URL =
   import.meta.env.VITE_SOROBAN_RPC_URL ||
