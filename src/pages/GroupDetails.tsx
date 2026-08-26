@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useGroups } from '../hooks/useGroups';
 import { useWallet } from '../context/WalletContext';
 import { calculateSettlements } from '../utils/settlement';
-import { addMemberOnChain, markPaidOnChain, getGroupFromContract, listenToContractEvents } from '../utils/soroban';
+import { addMemberOnChain, markPaidOnChain, getGroupFromContract, listenToContractEvents, getMemberIdsFromContract, getMemberFromContract } from '../utils/soroban';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { motion } from 'framer-motion';
 import { Calculator, DollarSign, Users, CheckCircle2, ShieldCheck, RefreshCw, Plus, CreditCard, Copy, ChevronLeft, Share2 } from 'lucide-react';
@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 const GroupDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { address } = useWallet();
-  const { getGroup, updateGroup } = useGroups();
+  const { getGroup, updateGroup, isHydrating, addGroup } = useGroups();
 
   const group = getGroup(id || '');
 
@@ -37,8 +37,68 @@ const GroupDetails: React.FC = () => {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [overlayTitle, setOverlayTitle] = useState('Processing Transaction');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isSyncingGroup, setIsSyncingGroup] = useState(false);
+  const [hasAttemptedSync, setHasAttemptedSync] = useState(false);
 
   const settlements = useMemo(() => (group ? calculateSettlements(group) : []), [group]);
+
+  // Reset attempted sync state when ID changes
+  useEffect(() => {
+    setHasAttemptedSync(false);
+  }, [id]);
+
+  // Sync missing group from Soroban RPC on direct link navigation
+  useEffect(() => {
+    if (!id || group || isHydrating || hasAttemptedSync) return;
+
+    const fetchGroupFromChain = async () => {
+      setIsSyncingGroup(true);
+      try {
+        const onChainGroup = await getGroupFromContract(id);
+        if (onChainGroup) {
+          // Fetch member IDs registered on-chain
+          const memberIds = await getMemberIdsFromContract(id);
+          
+          // Hydrate each member from the contract
+          const members = await Promise.all(
+            memberIds.map(async (memberId) => {
+              const m = await getMemberFromContract(id, memberId);
+              return {
+                id: memberId,
+                name: `Member ${memberId.substring(0, 4)}`, // Fallback display name
+                address: m?.address || '',
+                orderAmount: m?.orderAmount || 0,
+                hasPaid: m?.hasPaid || false,
+              };
+            })
+          );
+
+          // Construct local group representation
+          const newGroup = {
+            id,
+            title: onChainGroup.title,
+            description: onChainGroup.description,
+            leadBuyer: onChainGroup.leadBuyer,
+            totalGoodsTarget: 0,
+            status: 'Open' as const,
+            members,
+            expenses: [],
+            createdAt: Date.now(),
+          };
+
+          // Save the group locally
+          addGroup(newGroup);
+        }
+      } catch (err) {
+        console.error('Failed to fetch missing group from Soroban RPC:', err);
+      } finally {
+        setIsSyncingGroup(false);
+        setHasAttemptedSync(true);
+      }
+    };
+
+    fetchGroupFromChain();
+  }, [id, group, isHydrating, hasAttemptedSync, addGroup]);
 
   const handleCopyInviteLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -147,6 +207,16 @@ const GroupDetails: React.FC = () => {
       clearInterval(pollInterval);
     };
   }, [id]);
+
+  if (isHydrating || isSyncingGroup) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <RefreshCw className="w-12 h-12 text-primary animate-spin mb-4" />
+        <h2 className="text-xl font-bold mb-2">Syncing from blockchain...</h2>
+        <p className="text-textMuted max-w-md">Fetching group details and validating on-chain states.</p>
+      </div>
+    );
+  }
 
   if (!group) return <div className="text-center py-24 text-textMuted font-bold">Group not found</div>;
 
