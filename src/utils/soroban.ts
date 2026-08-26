@@ -14,7 +14,7 @@ export const RPC_URL =
 // The Stellar Asset Contract address for native XLM on Testnet.
 // This is a canonical, well-known address for the XLM SAC.
 export const NATIVE_XLM_SAC_TESTNET =
-  'CDLZFC3SYJYDZT7K67VZ75HPJGW5ZTYF2MYTCH2W3ZPN77O3JJV26UCA';
+  'CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC';
 
 // Stroops per XLM (7 decimal places).
 export const STROOPS_PER_XLM = 10_000_000n;
@@ -178,7 +178,7 @@ export async function createGroupOnChain(
         StellarSdk.nativeToScVal(groupId),
         StellarSdk.nativeToScVal(title),
         StellarSdk.nativeToScVal(desc),
-        StellarSdk.nativeToScVal(new StellarSdk.Address(userAddress))
+        StellarSdk.nativeToScVal(StellarSdk.Address.fromString(userAddress))
       )
     )
     .setTimeout(30)
@@ -219,7 +219,7 @@ export async function addMemberOnChain(
         'add_member',
         StellarSdk.nativeToScVal(groupId),
         StellarSdk.nativeToScVal(memberId),
-        StellarSdk.nativeToScVal(new StellarSdk.Address(address)),
+        StellarSdk.nativeToScVal(StellarSdk.Address.fromString(address)),
         StellarSdk.xdr.ScVal.scvU32(orderAmount)
       )
     )
@@ -275,7 +275,7 @@ export async function markPaidOnChain(
     .addOperation(
       contract.call(
         'mark_paid',
-        StellarSdk.nativeToScVal(new StellarSdk.Address(tokenAddress)),
+        StellarSdk.nativeToScVal(StellarSdk.Address.fromString(tokenAddress)),
         StellarSdk.nativeToScVal(groupId),
         StellarSdk.nativeToScVal(memberId),
         // Encode the settlement amount as i128 — required by the contract's
