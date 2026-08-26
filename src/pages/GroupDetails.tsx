@@ -6,7 +6,7 @@ import { calculateSettlements } from '../utils/settlement';
 import { addMemberOnChain, markPaidOnChain, getGroupFromContract, listenToContractEvents } from '../utils/soroban';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { motion } from 'framer-motion';
-import { Calculator, DollarSign, Users, CheckCircle2, ShieldCheck, RefreshCw, Plus, CreditCard, Copy, ChevronLeft } from 'lucide-react';
+import { Calculator, DollarSign, Users, CheckCircle2, ShieldCheck, RefreshCw, Plus, CreditCard, Copy, ChevronLeft, Share2 } from 'lucide-react';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { Link } from 'react-router-dom';
 
@@ -36,8 +36,15 @@ const GroupDetails: React.FC = () => {
   const [txError, setTxError] = useState<string | null>(null);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [overlayTitle, setOverlayTitle] = useState('Processing Transaction');
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const settlements = useMemo(() => (group ? calculateSettlements(group) : []), [group]);
+
+  const handleCopyInviteLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
 
   const parseContractEvent = (ev: any) => {
     try {
@@ -324,6 +331,15 @@ const GroupDetails: React.FC = () => {
         <div className="space-y-3 relative z-10">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gradient leading-tight">{group.title}</h1>
           <p className="text-textMuted text-sm max-w-2xl leading-relaxed">{group.description}</p>
+          <div className="pt-1">
+            <button
+              onClick={handleCopyInviteLink}
+              className="inline-flex items-center space-x-2 bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 text-primary px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>{copiedLink ? 'Copied!' : 'Copy Invite Link'}</span>
+            </button>
+          </div>
           <div className="flex items-center space-x-4 pt-1 flex-wrap gap-y-2">
             <span className="bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full shrink-0">
               Status: {group.status}
