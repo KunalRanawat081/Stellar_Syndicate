@@ -193,8 +193,12 @@ export async function createGroupOnChain(
   const txToSubmit = StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, StellarSdk.Networks.TESTNET);
   const response = await rpcServer.sendTransaction(txToSubmit);
   
-  if (response.status === 'ERROR') {
-    throw new Error(response.errorResult?.toString() || 'Transaction simulation or submission failed');
+  if (response.status === 'ERROR' || !response.hash) {
+    throw new Error(
+      (response as any).errorResultXdr ||
+      response.errorResult?.toString() ||
+      'Transaction simulation or submission failed'
+    );
   }
 
   return await pollTxStatus(response.hash);
@@ -235,8 +239,12 @@ export async function addMemberOnChain(
   const txToSubmit = StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, StellarSdk.Networks.TESTNET);
   const response = await rpcServer.sendTransaction(txToSubmit);
   
-  if (response.status === 'ERROR') {
-    throw new Error(response.errorResult?.toString() || 'Transaction failed');
+  if (response.status === 'ERROR' || !response.hash) {
+    throw new Error(
+      (response as any).errorResultXdr ||
+      response.errorResult?.toString() ||
+      'Transaction failed'
+    );
   }
 
   return await pollTxStatus(response.hash);
@@ -295,8 +303,12 @@ export async function markPaidOnChain(
   const txToSubmit = StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, StellarSdk.Networks.TESTNET);
   const response = await rpcServer.sendTransaction(txToSubmit);
   
-  if (response.status === 'ERROR') {
-    throw new Error(response.errorResult?.toString() || 'Transaction failed');
+  if (response.status === 'ERROR' || !response.hash) {
+    throw new Error(
+      (response as any).errorResultXdr ||
+      response.errorResult?.toString() ||
+      'Transaction failed'
+    );
   }
 
   return await pollTxStatus(response.hash);
@@ -307,21 +319,47 @@ export async function markPaidOnChain(
 // ---------------------------------------------------------------------------
 
 export async function pollTxStatus(txHash: string): Promise<string> {
-  let status = 'PENDING';
+  if (!txHash) {
+    throw new Error('Transaction hash is required for status polling.');
+  }
+
   let attempts = 0;
-  while ((status === 'PENDING' || status === 'NOT_FOUND') && attempts < 30) {
+  const maxAttempts = 30; // Max 30 seconds timeout
+
+  while (attempts < maxAttempts) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const response = await rpcServer.getTransaction(txHash);
-    status = response.status;
-    if (status === 'SUCCESS') {
-      return txHash;
-    } else if (status === 'FAILED') {
-      const errorMsg = (response as any).resultXdr?.toXDR('base64') || 'Transaction failed on-chain';
-      throw new Error(errorMsg);
+
+    try {
+      const response = await rpcServer.getTransaction(txHash);
+
+      if (response.status === StellarSdk.rpc.Api.GetTransactionStatus.SUCCESS) {
+        return txHash;
+      }
+
+      if (response.status === StellarSdk.rpc.Api.GetTransactionStatus.FAILED) {
+        let errorMsg = 'Transaction failed on-chain.';
+        if (response.resultXdr) {
+          try {
+            errorMsg = `Transaction failed on-chain (Result XDR: ${response.resultXdr.toXDR('base64')})`;
+          } catch {
+            errorMsg = `Transaction failed on-chain: ${String(response.resultXdr)}`;
+          }
+        }
+        throw new Error(errorMsg);
+      }
+
+      // If response.status === NOT_FOUND, continue loop
+    } catch (err: any) {
+      if (err.message && err.message.includes('failed on-chain')) {
+        throw err;
+      }
+      console.warn(`Polling attempt ${attempts + 1} for transaction ${txHash}:`, err);
     }
+
     attempts++;
   }
-  throw new Error('Transaction polling timed out.');
+
+  throw new Error(`Transaction polling timed out for hash ${txHash}`);
 }
 
 export function listenToContractEvents(
