@@ -4,9 +4,55 @@ StellarSyndicate is a decentralized bulk-buy and co-op purchasing application de
 
 ## Live Demo & Contracts
 * **Live Demo URL:** [https://stellarsyndicate-main.vercel.app](https://stellarsyndicate-main.vercel.app)
-* **Demo Video:** [Watch the Transaction Demo](https://drive.google.com/file/d/1Jq6kAmltKawRmqGKRFJCZBAcEMwI_dYh/view?usp=drive_link)
-* **Deployed Soroban Contract Address:** [CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY](https://stellar.expert/explorer/testnet/contract/CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY)
-* **Successful Contract Call Tx Hash:** [cebc1786fd5698036121badde80858dfe10b6c9ad8877ff1dd5559a0b527e91f](https://stellar.expert/explorer/testnet/tx/cebc1786fd5698036121badde80858dfe10b6c9ad8877ff1dd5559a0b527e91f)
+* **Demo Video:** [Watch the Level 4 Demo Video](https://drive.google.com/file/d/1O6kLgOuNL-J0HhDBBqxK85ilR8NBexav/view?usp=drive_link)
+* **Deployed Soroban Contract Address:** [CDSPKUMNGZHZYTOO5ZRX2TFJQIP776DYM53ZCE4RHKJCQBPOWYEMW4MG](https://stellar.expert/explorer/testnet/contract/CDSPKUMNGZHZYTOO5ZRX2TFJQIP776DYM53ZCE4RHKJCQBPOWYEMW4MG)
+
+---
+
+## Demo Video
+
+Watch the comprehensive video walkthrough demonstrating the Level 4 MVP features, wallet connection, bulk syndicate creation, member order management, on-chain SAC settlement, and real-time ledger sync:
+
+🎬 **[Watch the Level 4 Demo Video on Google Drive](https://drive.google.com/file/d/1O6kLgOuNL-J0HhDBBqxK85ilR8NBexav/view?usp=drive_link)**
+
+---
+
+## Level 4 Submission Compliance Checklist
+
+### 1. Production MVP
+- [x] Stable frontend and smart contract architecture
+- [x] Mobile responsive UI
+- [x] Proper loading states and error handling
+
+### 2. User Onboarding
+- [x] Minimum 10 real users onboarded
+- [x] Proof of wallet interactions
+- [x] Basic user feedback collection
+
+### 3. Product Quality
+- [x] Production deployment
+- [x] Monitoring and analytics integration
+- [x] Optimized user experience
+- [x] Proper project structure and documentation
+
+### 4. Technical Standards
+- [x] Smart contracts deployed on Stellar testnet
+- [x] Minimum 15+ meaningful commits
+- [x] Public GitHub repository
+
+### 5. Demo & Review
+- [x] Live demo video showcasing complete functionality
+
+### 6. Final Submission Checklist
+- [x] GitHub repo
+- [x] README
+- [x] 15+ commits
+- [x] Live demo link
+- [x] Contract deployment address
+- [x] Screenshots of Product UI/Mobile/Analytics
+- [x] Demo video link
+- [x] Proof of 10+ user wallet interactions
+- [x] Basic user feedback summary
 
 ---
 
@@ -95,7 +141,7 @@ Create a `.env` file in the root directory:
 ```env
 VITE_STELLAR_NETWORK=testnet
 VITE_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
-VITE_CONTRACT_ADDRESS=CBFQ6FBVOSYZWSTXXPQVDNHR3H7LYOAQVHAHHJGMWSFUZNXZ4Z7L2GTY
+VITE_CONTRACT_ADDRESS=CDSPKUMNGZHZYTOO5ZRX2TFJQIP776DYM53ZCE4RHKJCQBPOWYEMW4MG
 ```
 
 ---
